@@ -1,0 +1,47 @@
+/var/log/oidc/*.log {
+       daily
+       rotate 180
+       delaycompress
+       compress
+       notifempty
+       missingok
+       dateext
+       dateformat .%Y-%m-%d
+}
+
+/var/log/oidc/*.debug {
+       daily
+       rotate 60
+       delaycompress
+       compress
+       notifempty
+       missingok
+       dateext
+       dateformat .%Y-%m-%d
+}
+
+{% if primary_node %}
+
+/var/log/oidc_central/*.log {
+       daily
+       rotate 180
+       delaycompress
+       compress
+       notifempty
+       missingok
+       dateext
+       dateformat .%Y-%m-%d
+}
+
+/var/log/oidc_central/*.debug {
+       daily
+       rotate 60
+       delaycompress
+       compress
+       notifempty
+       missingok
+       dateext
+       dateformat .%Y-%m-%d
+}
+
+{% endif %}

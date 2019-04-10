@@ -1,0 +1,11 @@
+[all:children]
+cesnet
+
+[cesnet:children]
+cesnet_main
+cesnet_production
+
+[cesnet_main]
+147.251.255.65 ansible_user=root primary_node=False server_name=login1.cesnet.cz
+
+[cesnet_production]

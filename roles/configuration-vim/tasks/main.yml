@@ -1,0 +1,20 @@
+---
+- name: Copy vimrc config file
+  copy:
+    src: files/vimrc.local
+    dest: /etc/vim/vimrc.local
+
+- name: Remove root .vimrc file
+  file:
+    state: absent
+    path: /root/.vimrc
+
+- name: Get list of homes
+  shell: ls /home
+  register: homes
+
+- name: Remove vimrc config file for all users
+  file:
+    state: absent
+    path: "/home/{{ item }}/.vimrc"
+  with_items: "{{ homes.stdout_lines }}"

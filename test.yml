@@ -1,0 +1,20 @@
+---
+
+- hosts: all
+  remote_user: root
+  roles:
+#    - { role: install_packages, tags: install_packages }
+#    - { role: configuration-shell, tags: configuration, configuration-shell }
+#    - { role: configuration-vim, tags: configuration, configuration-vim }
+#    - { role: configuration-rsyslog, tags: configuration, configuration-rsyslog }
+#    - { role: configuration-logrotate, tags: configuration, configuration-logrotate }
+#    - { role: configuration-shibboleth, tags: configuration, configuration-shibboleth }
+#    - { role: configuration-apache, tags: configuration, configuration-apache }
+#    - { role: configuration-tomcat, tags: configuration, configuration-tomcat }
+#    - { role: configuration-db, tags: configuration, configuration-db }
+#    - { role: deploy-simplesamlphp, tags: deployment, deployment-simplesamlphp }
+#    - { role: deploy-oidc, tags: deployment, deployment-oidc }
+#    - { role: deploy-ha, tags: deployment, deployment-ha }
+#    - { role: deploy-addinstitution, tags: deployment, deploy-addinstitution }
+#    - { role: deploy-yubikey, tags: deployment, deploy-yubikey }
+    - { role: deploy-monitoring, tags: deployment, deploy-monitoring }

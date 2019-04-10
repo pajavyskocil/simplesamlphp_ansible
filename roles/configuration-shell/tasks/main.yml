@@ -1,0 +1,20 @@
+---
+- name: Copy bash.bashrc file
+  copy:
+    src: files/bash.bashrc
+    dest: /etc/bash.bashrc
+
+- name: Remove root bashrc file
+  file:
+    state: absent
+    path: /root/.bashrc
+
+- name: Get list of homes
+  shell: ls /home
+  register: homes
+
+- name: Remove bashrc file for all users
+  file:
+    state: absent
+    path: "/home/{{ item }}/.bashrc"
+  with_items: "{{ homes.stdout_lines }}"

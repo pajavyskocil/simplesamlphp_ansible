@@ -1,0 +1,8 @@
+---
+
+- name: restart tomcat
+  become: true
+  service:
+    state: restarted
+    name: tomcat8
+  listen: "restart tomcat"

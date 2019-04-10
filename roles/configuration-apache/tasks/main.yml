@@ -1,0 +1,52 @@
+---
+
+- name: Install prerequisites
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - apache2
+
+- name: Gather package facts
+  package_facts:
+    manager: "apt"
+
+- name: Check that Shibboleth is installed
+  assert:
+    that:
+      - '"shibboleth" in ansible_facts.packages or "libapache2-mod-shib" in ansible_facts.packages'
+    msg: "Shibboleth is required in Apache config files"
+
+- name: Enable Apache modules
+  apache2_module:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ apache_modules }}"
+  notify:
+    - "restart webserver"
+
+- name: Remove default Apache site
+  file:
+    path: "/etc/apache2/sites-enabled/{{ item }}"
+    state: absent
+  with_items:
+    - 000-default.conf
+    - default-ssl.conf
+  notify:
+    - "restart webserver"
+
+- name: Create Apache configuration files in /etc/apache2/sites-available/
+  template:
+    src: "templates/{{ instance }}/{{ item }}.j2"
+    dest: "/etc/apache2/sites-available/{{ item }}"
+    force: no
+    mode: 0644
+  with_items: "{{ apache_sites }}"
+
+- name: Enable Perun sites in Apache
+  command:  a2ensite "{{ item }}"
+  args:
+    creates: "/etc/apache2/sites-enabled/{{ item }}"
+  with_items: "{{ apache_sites }}"
+  notify:
+    - "restart webserver"

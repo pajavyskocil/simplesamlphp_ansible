@@ -1,0 +1,93 @@
+/var/log/simplesamlphp/*/*.logins {
+       daily
+       rotate 180
+       delaycompress
+       compress
+       notifempty
+       missingok
+       dateext
+       dateformat .%Y-%m-%d
+}
+
+
+/var/log/simplesamlphp/social-providers/*/*.log {
+       daily
+       rotate 180
+       delaycompress
+       compress
+       notifempty
+       missingok
+       dateext
+       dateformat .%Y-%m-%d
+}
+
+/var/log/simplesamlphp/social-providers/*/*.debug {
+       daily
+       rotate 60
+       delaycompress
+       compress
+       notifempty
+       missingok
+       dateext
+       dateformat .%Y-%m-%d
+}
+
+{% if {{ primary_node }} %}
+
+/var/log/simplesamlphp_central/*/*.log {
+       daily
+       rotate 180
+       delaycompress
+       compress
+       notifempty
+       missingok
+       dateext
+       dateformat .%Y-%m-%d
+}
+
+/var/log/simplesamlphp_central/*/*.debug {
+       daily
+       rotate 60
+       delaycompress
+       compress
+       notifempty
+       missingok
+       dateext
+       dateformat .%Y-%m-%d
+}
+
+/var/log/simplesamlphp_central/*/*.logins {
+       daily
+       rotate 180
+       delaycompress
+       compress
+       notifempty
+       missingok
+       dateext
+       dateformat .%Y-%m-%d
+}
+
+
+/var/log/simplesamlphp_central/social-providers/*/*.log {
+       daily
+       rotate 180
+       delaycompress
+       compress
+       notifempty
+       missingok
+       dateext
+       dateformat .%Y-%m-%d
+}
+
+/var/log/simplesamlphp_central/social-providers/*/*.debug {
+       daily
+       rotate 60
+       delaycompress
+       compress
+       notifempty
+       missingok
+       dateext
+       dateformat .%Y-%m-%d
+}
+
+{% endif %}

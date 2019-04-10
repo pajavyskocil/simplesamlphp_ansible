@@ -1,0 +1,11 @@
+---
+
+- name: Copy logrotate configuration for simplesamlphp
+  template:
+    src: "templates/simplesamlphp/{{ instance }}.j2"
+    dest: "/etc/logrotate.d/simplesamlphp"
+
+- name: Copy logrotate configuration for oidc
+  template:
+    src: "templates/oidc/{{ instance }}.j2"
+    dest: "/etc/logrotate.d/oidc"

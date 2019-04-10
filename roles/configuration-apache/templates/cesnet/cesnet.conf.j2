@@ -1,0 +1,15 @@
+<VirtualHost *:80>
+        ServerName  {{ server_name }}
+        ServerAlias {{ server_alias }}
+
+        ServerAdmin {{ server_admin }}
+        DocumentRoot /var/www/html
+
+        ErrorLog ${APACHE_LOG_DIR}/error.log
+        CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+        RewriteEngine On
+        RewriteCond %{HTTPS} !=on
+        RewriteRule ^/?(.*) https://%{SERVER_NAME}/$1 [R,L]
+
+</VirtualHost>

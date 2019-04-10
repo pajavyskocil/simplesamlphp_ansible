@@ -1,0 +1,22 @@
+---
+
+php_version: "7.0"
+primary_node: False
+
+simplesamlphp_git_repository_url: "https://github.com/CESNET/simplesamlphp"
+simplesamlphp_path: "/opt/simplesamlphp"
+simplesamlphp_branch: ""
+
+have_addinstitutionapp: True
+addinstitutionapp_git_repository_url: "https://github.com/ICS-MU/proxyidp-add-institution"
+addinstitutionapp_path: "/var/www/add-institution"
+addinstitutionapp_branch: "master"
+
+mitreid_git_repository_url: "https://github.com/CESNET/perun-mitreid"
+mitreid_path: "/opt/mitreid"
+mitreid_branch: ""
+
+mitreid_config_location: ""
+mitreid_log_type: ""
+mitreid_log_facility: ""
+mitreid_log_level: ""

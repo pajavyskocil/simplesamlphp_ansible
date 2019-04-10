@@ -1,0 +1,30 @@
+---
+
+- name: Install prerequisites
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - maven
+    - openjdk-8-jdk
+
+- name: Download mitreid
+  git:
+    repo: "{{ mitreid_git_repository_url }}"
+    dest: "{{ mitreid_path }}"
+    version: "{{ mitreid_branch }}"
+    update: True
+
+- name: Package mitreid
+  shell: "cd {{ mitreid_path }} && mvn clean package -Dconfig.location={{ mitreid_config_location }} -Dlog.to={{ mitreid_log_type }} -Dlog.facility={{ mitreid_log_facility }} -Dlog.level={{ mitreid_log_level }}"
+
+- name: Copy war file to tomcat
+  copy:
+    src: "{{ mitreid_path }}/oidc-idp/target/oidc.war"
+    dest: "/var/lib/tomcat8/webapps/oidc.war"
+    remote_src: yes
+
+- name: Prepare directory for configuration
+  file:
+    path: "{{ mitreid_config_path }}"
+    state: directory

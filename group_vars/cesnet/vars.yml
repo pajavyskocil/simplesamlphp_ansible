@@ -1,0 +1,63 @@
+---
+# CRM or EXABGP
+ha_type: "CRM"
+
+instance: "cesnet"
+instance_name: "CESNET"
+
+shibboleth_sp_entityID: "https://login.cesnet.cz/oidc"
+shibboleth_idp_entityID: "https://login.cesnet.cz/idp"
+shibboleth_metadataProvider_URL: "https://login.cesnet.cz/proxy/saml2/idp/metadata.php"
+
+apache_sites:
+  - cesnet.conf
+  - cesnet-ssl.conf
+#  - metacentrum.conf
+#  - metacentrum-ssl.conf
+
+server_alias: "login.cesnet.cz"
+server_admin: "login@cesnet.cz"
+
+# php_version: "7.0"
+
+simplesamlphp_branch: "cesnet_simplesamlphp-1.17"
+simplesamlphp_base_dir: "/etc/simplesamlphp"
+simplesamlphp_cert_dir: "{{ simplesamlphp_base_dir }}/cert"
+simplesamlphp_config_dirs:
+  - cert
+  - cesnet
+  - cesnet_google
+  - cesnet_github
+  - cesnet_facebook
+  - cesnet_orcid
+  - cesnet_linkedin
+  - metacentrum
+
+have_addinstitutionapp: True
+addinstitutionapp_ajp_prefixed_attributes:
+  - eppn
+  - persistent-id
+  - affiliation
+  - unscoped-affiliation
+  - schacHomeOrganization
+  - mail
+  - displayName
+  - sourceIdPEntityID
+  - o
+
+mitreid_branch: "production"
+
+mitreid_config_path: "/etc/perun/"
+mitreid_config_location: "/etc/perun/perun-mitreid.properties"
+mitreid_log_type: "SYSLOG"
+mitreid_log_facility: "LOCAL7"
+mitreid_log_level: "debug"
+
+
+yubikey_id: ""
+yubikey_key: ""
+
+
+nagios_scipt_login: "9006464"
+nagios_service_status_services: "'apache2 tomcat8 mysql exabgp'"
+nagios_git_pull_check_paths: "'{{simplesamlphp_base_dir }} {{ mitreid_config_path }}'"

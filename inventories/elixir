@@ -1,0 +1,12 @@
+[all:children]
+elixir_main
+elixir_production
+elixir_finland
+
+[elixir_main]
+147.251.255.225 ansible_user=root
+
+[elixir_production]
+
+
+[elixir_finland]

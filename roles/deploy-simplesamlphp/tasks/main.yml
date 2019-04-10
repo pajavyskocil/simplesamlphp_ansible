@@ -1,0 +1,69 @@
+---
+
+- name: Install prerequisites
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - memcached
+    - php{{php_version}}-fpm
+    - php{{php_version}}-cli
+    - php{{php_version}}-curl
+    - php{{php_version}}-json
+    - php{{php_version}}-ldap
+    - php{{php_version}}-mbstring
+    - php{{php_version}}-mysql
+    - php{{php_version}}-xml
+    - php{{php_version}}-mysqli
+    - php-memcached
+
+- name: Download simplesamlphp
+  git:
+    repo: "{{ simplesamlphp_git_repository_url }}"
+    dest: "{{ simplesamlphp_path }}"
+    version: "{{ simplesamlphp_branch }}"
+
+- name: Install simplesamlphp
+  shell: "cd {{ simplesamlphp_path }} && php composer.phar install"
+
+- name: Create base directory for simplesamlphp configuration
+  file:
+    path: "{{ simplesamlphp_base_dir }}"
+    state: directory
+
+- name: Create base direcotries for configuration
+  file:
+    path: "{{ simplesamlphp_base_dir }}/{{ item }}"
+    state: directory
+    owner: www-data
+    group: www-data
+  with_items: "{{ simplesamlphp_config_dirs }}"
+
+- name: Create config directories
+  file:
+    path: "{{ simplesamlphp_base_dir }}/{{ item }}/config"
+    state: directory
+    owner: www-data
+    group: www-data
+  with_items: "{{ simplesamlphp_config_dirs }}"
+
+- name: Create metadata directories
+  file:
+    path: "{{ simplesamlphp_base_dir }}/{{ item }}/metadata"
+    state: directory
+    owner: www-data
+    group: www-data
+  with_items: "{{ simplesamlphp_config_dirs }}"
+
+- name: Increase PHP max_execution_time
+  replace:
+    path: "/etc/php/{{ php_version }}/fpm/php.ini"
+    regexp: "max_execution_time.*"
+    replace: "max_execution_time = 180"
+
+- name: Increase PHP memory_limit
+  replace:
+    path: "/etc/php/{{ php_version }}/fpm/php.ini"
+    regexp: "memory_limit.*"
+    replace: "memory_limit = 512M"
+

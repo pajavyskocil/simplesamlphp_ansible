@@ -1,0 +1,96 @@
+#################
+#### MODULES ####
+#################
+
+module(load="immark")  # provides --MARK-- message capability
+
+# provides UDP syslog reception
+module(load="imudp")
+input(type="imudp" port="514")
+
+###########################
+#### GLOBAL DIRECTIVES ####
+###########################
+
+$EscapeControlCharactersOnReceive off
+
+###################
+#### TEMPLATES ####
+###################
+
+{% if primary_node %}
+# CENTRAL TEMPLATES
+$template Central-cesnet,                       "/var/log/simplesamlphp_central/cesnet/%PROGRAMNAME%.log"
+$template Central-cesnet-debug,                 "/var/log/simplesamlphp_central/cesnet/%PROGRAMNAME%.debug"
+$template Central-cesnet-logins,                "/var/log/simplesamlphp_central/cesnet/%PROGRAMNAME%.logins"
+$template Central-meta,                         "/var/log/simplesamlphp_central/metacentrum/%PROGRAMNAME%.log"
+$template Central-meta-debug,                   "/var/log/simplesamlphp_central/metacentrum/%PROGRAMNAME%.debug"
+$template Central-social-providers,             "/var/log/simplesamlphp_central/social-providers/%PROGRAMNAME%/%PROGRAMNAME%.log"
+$template Central-social-providers-debug,       "/var/log/simplesamlphp_central/social-providers/%PROGRAMNAME%/%PROGRAMNAME%.debug"
+$template Central-oidc,                         "/var/log/oidc_central/oidc.log"
+$template Central-oidc-debug,                   "/var/log/oidc_central/oidc.debug"
+
+{% endif %}
+# LOCAL TEMPLATES
+$template cesnet,                       "/var/log/simplesamlphp/cesnet/%PROGRAMNAME%.log"
+$template cesnet-debug,                 "/var/log/simplesamlphp/cesnet/%PROGRAMNAME%.debug"
+$template cesnet-logins,                "/var/log/simplesamlphp/cesnet/%PROGRAMNAME%.logins"
+$template metacentrum,                  "/var/log/simplesamlphp/metacentrum/%PROGRAMNAME%.log"
+$template metacentrum-debug,            "/var/log/simplesamlphp/metacentrum/%PROGRAMNAME%.debug"
+$template Social-providers,             "/var/log/simplesamlphp/social-providers/%PROGRAMNAME%/%PROGRAMNAME%.log"
+$template Social-providers-debug,       "/var/log/simplesamlphp/social-providers/%PROGRAMNAME%/%PROGRAMNAME%.debug"
+$template oidc,                         "/var/log/oidc/oidc.log"
+$template oidc-debug,                   "/var/log/oidc/oidc.debug"
+
+###############
+#### RULES ####
+###############
+
+{% if primary_node %}
+# CENTRAL RULES
+local0.notice   ?Central-cesnet
+local0.debug    ?Central-cesnet-debug
+
+if $msg contains 'User' and $msg contains 'identity:' then {
+        local0.=notice ?Central-cesnet-logins
+}
+
+
+local1.notice   ?Central-social-providers
+local1.debug    ?Central-social-providers-debug
+
+local2.notice   ?Central-meta
+local2.debug    ?Central-meta-debug
+
+local7.info     ?Central-oidc
+local7.debug    ?Central-oidc-debug
+
+if ($fromhost-ip != "127.0.0.1" ) then stop
+
+{% endif %}
+
+# LOCAL RULES
+local0.notice   ?cesnet
+local0.debug    ?cesnet-debug
+
+if $msg contains 'User' and $msg contains 'identity:' then {
+        local0.=notice ?cesnet-logins
+}
+
+local1.notice   ?Social-providers
+local1.debug    ?Social-providers-debug
+
+local2.notice   ?metacentrum
+local2.debug    ?metacentrum-debug
+
+local7.notice   ?oidc
+local7.debug    ?oidc-debug
+
+{% if primary_node %}
+# Sending all logs to global logger machine
+local0.*        @login1.cesnet.cz:514
+local1.*        @login1.cesnet.cz:514
+local2.*        @login1.cesnet.cz:514
+local7.*        @login1.cesnet.cz:514
+
+{% endif %}

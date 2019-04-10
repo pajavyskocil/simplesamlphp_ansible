@@ -1,0 +1,31 @@
+---
+
+- name: Install prerequisites
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - tomcat8
+
+- name: server.xml remove default Connector
+  xml:
+    path: /etc/tomcat8/server.xml
+    xpath: /Server/Service/Connector
+    state: absent
+  notify:
+    - "restart tomcat"
+
+- name: server add Connector on 8009
+  blockinfile:
+    path: /etc/tomcat8/server.xml
+    insertbefore: '<Engine name="Catalina" defaultHost="localhost">'
+    marker: "<!-- {mark} ANSIBLE IdP metadata MANAGED BLOCK -->"
+    content: |
+      <!-- Define an AJP 1.3 Connector on port 8009 -->
+      <Connector port="8009" protocol="AJP/1.3" redirectPort="8443"
+      address="127.0.0.1" useBodyEncodingForURI="true" tomcatAuthentication="false" packetSize="60000"
+      />
+  notify:
+    - "restart tomcat"
+
+

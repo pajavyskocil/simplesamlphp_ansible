@@ -1,0 +1,22 @@
+---
+
+- name: Install addInstitution app
+  git:
+    repo: "{{ addinstitutionapp_git_repository_url }}"
+    dest: "{{ addinstitutionapp_path }}"
+    version: " {{ addinstitutionapp_branch }}"
+    force: yes
+
+- name: Copy configuation file
+  template:
+    src: "templates/{{ instance }}_config.php.j2"
+    dest: "{{ addinstitutionapp_path }}/config.php"
+    force: yes
+
+
+- name: Set _AJP prefix for attributes
+  replace:
+    path: "{{ addinstitutionapp_path }}/index.php"
+    regexp: "'{{ item }}'"
+    replace: "'AJP_{{ item }}'"
+  with_items: "{{ addinstitutionapp_ajp_prefixed_attributes }}"

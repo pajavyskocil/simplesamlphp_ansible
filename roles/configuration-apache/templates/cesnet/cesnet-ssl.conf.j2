@@ -1,0 +1,124 @@
+<IfModule mod_ssl.c>
+        <VirtualHost *:443>
+                ServerName {{ server_name }}
+                ServerAlias {{ server_alias }}
+
+                ServerAdmin {{ server_admin }}
+
+                DocumentRoot /var/www/html
+
+                ErrorLog ${APACHE_LOG_DIR}/error.log
+                CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+                #   SSL Engine Switch:
+                #   Enable/Disable SSL for this virtual host.
+                SSLEngine on
+
+                SSLCertificateFile      /etc/ssl/login.cesnet.cz/login.cesnet.cz-2017.cert.pem
+                SSLCertificateKeyFile   /etc/ssl/login.cesnet.cz/login.cesnet.cz-2017.key.pem
+                SSLCertificateChainFile /etc/ssl/login.cesnet.cz/chain_TERENA_SSL_CA_3.pem
+                SSLCACertificatePath /etc/ssl/login.cesnet.cz
+
+                <FilesMatch "\.(cgi|shtml|phtml|php)$">
+                                SSLOptions +StdEnvVars
+                </FilesMatch>
+                <Directory /usr/lib/cgi-bin>
+                                SSLOptions +StdEnvVars
+                </Directory>
+
+                BrowserMatch "MSIE [2-6]" \
+                                nokeepalive ssl-unclean-shutdown \
+                                downgrade-1.0 force-response-1.0
+                # MSIE 7 and newer should be able to use keepalive
+                BrowserMatch "MSIE [17-9]" ssl-unclean-shutdown
+                # HSTS (mod_headers is required) (15768000 seconds = 6 months)
+                Header always set Strict-Transport-Security "max-age=15768000"
+
+                RewriteEngine On
+                RewriteRule ^[/]?$ "https://www.cesnet.cz"
+
+                RedirectMatch ^/(stats|stats/|statistics|statistics/)?$ /proxy/module.php/proxystatistics/
+
+                RedirectMatch ^/services/?$ /proxy/module.php/perun/listOfSps.php
+                RedirectMatch ^/monitor/?$ /proxy/module.php/perun/status.php
+
+                RedirectMatch ^\/?$ /proxy
+
+                Alias /register /var/www/registration/
+                Alias /proxy /opt/simplesamlphp/www
+                Alias /idp /opt/simplesamlphp/www
+
+                Alias /orcid /opt/simplesamlphp/www
+                Alias /google /opt/simplesamlphp/www
+                Alias /linkedin /opt/simplesamlphp/www
+                Alias /github /opt/simplesamlphp/www
+                Alias /facebook /opt/simplesamlphp/www
+                Alias /twitter /opt/simplesamlphp/www
+
+                <Directory /opt/simplesamlphp/www>
+                    # For Apache 2.4:
+                    Require all granted
+                </Directory>
+                <LocationMatch /(proxy|idp)>
+                        SetEnv SIMPLESAMLPHP_CONFIG_DIR /etc/simplesamlphp/cesnet/config
+                        Require all granted
+                </LocationMatch>
+                <Location /orcid>
+                        # For Apache 2.4:
+                        SetEnv SIMPLESAMLPHP_CONFIG_DIR /etc/simplesamlphp/cesnet_orcid/config
+                        Require all granted
+                </Location>
+                <Location /google>
+                        SetEnv SIMPLESAMLPHP_CONFIG_DIR /etc/simplesamlphp/cesnet_google/config
+                        # For Apache 2.4:
+                        Require all granted
+                </Location>
+                <Location /linkedin>
+                        SetEnv SIMPLESAMLPHP_CONFIG_DIR /etc/simplesamlphp/cesnet_linkedin/config
+                        # For Apache 2.4:
+                        Require all granted
+                </Location>
+                <Location /github>
+                        SetEnv SIMPLESAMLPHP_CONFIG_DIR /etc/simplesamlphp/cesnet_github/config
+                        # For Apache 2.4:
+                        Require all granted
+                </Location>
+                <Location /facebook>
+                        SetEnv SIMPLESAMLPHP_CONFIG_DIR /etc/simplesamlphp/cesnet_facebook/config
+                        # For Apache 2.4:
+                        Require all granted
+                </Location>
+                <Location /twitter>
+                        SetEnv SIMPLESAMLPHP_CONFIG_DIR /etc/simplesamlphp/cesnet_twitter/config
+                        # For Apache 2.4:
+                        Require all granted
+                </Location>
+                # Has to be enough general because of backwards compatibility URLs
+                <LocationMatch ^/proxy/module\.php/(perun/protected)/(whitelistedIdps|reportIdp|addIdPToWhitelist|whitelistIdp)\.php$>
+                        AuthType Basic
+                        AuthName "Protected endpoint"
+
+                        AuthUserFile /etc/apache2/.htpasswd
+                        Require user perun-attribute-check
+                </LocationMatch>
+                <LocationMatch ^/proxy/module\.php/(perun/protected)/(listServices)\.php$>
+                        AuthType Basic
+                        AuthName "Protected endpoint"
+                        AuthUserFile /etc/apache2/.htpasswd
+                        Require user perun-services-list
+                </LocationMatch>
+
+                ProxyIOBufferSize 59000
+                LimitRequestFieldsize 58000
+
+                <LocationMatch "^\/oidc\/(?!token|introspect|userinfo|jwk|.well-known).*">
+                        AuthType shibboleth
+                        ShibRequireSession Off
+                        Require valid-user
+                </LocationMatch>
+                ProxyPass /oidc ajp://localhost:8009/oidc
+
+        </VirtualHost>
+</IfModule>
+
+

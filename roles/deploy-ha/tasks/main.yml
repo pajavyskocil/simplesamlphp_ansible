@@ -1,0 +1,15 @@
+---
+
+# When ha_type is EXABGP, install EXABGP package
+- name: Install EXABGP
+  apt:
+    name: exabgp
+  when: ha_type == "EXABGP"
+
+# When ha_type is CRM, install crmsh package
+- name: Install corosync and pacemaker
+  apt:
+    name:
+      - crmsh
+      - pacemaker
+  when: ha_type == "CRM"
